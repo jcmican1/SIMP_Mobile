@@ -4,53 +4,60 @@ import {
   Text,
   TextInput,
   Button,
-  StyleSheet,
-  Picker,
+  StyleSheet
 } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
-const FormularioUsuario = ({ onSubmit }) => {
-  const [nombreUsuario, setNombreUsuario] = useState('');
-  const [apellido, setApellido] = useState('');
-  const [correo, setCorreo] = useState('');
-  const [clave, setClave] = useState('');
-  const [rolIdRol, setRolIdRol] = useState('');
-  const [estadoIdEstado, setEstadoIdEstado] = useState('');
+const FormularioUsuario = ({ onSubmit, data = {}, onUpdate }) => {
+  const [NombreUsuario, setNombreUsuario] = useState(data.NombreUsuario || '');
+  const [Apellido, setApellido] = useState(data.Apellido || '');
+  const [Correo, setCorreo] = useState(data.Correo || '');
+  const [Clave, setClave] = useState(data.Clave || '');
+  const [DescripcionRol, setRolIdRol] = useState(data.DescripcionRol || '');
+  const [DescripcionEstado, setEstadoIdEstado] = useState(data.DescripcionEstado || '');
 
-  const roles = ['Admin', 'Usuario', 'Invitado'];
-  const estados = ['Activo', 'Inactivo'];
+  const roles = ['1', '2', '3'];
+  const estados = ['1', '2', '3'];
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Validar que ningún campo esté vacío
     if (
-      !nombreUsuario ||
-      !apellido ||
-      !correo ||
-      !clave ||
-      !rolIdRol ||
-      !estadoIdEstado
+      !NombreUsuario ||
+      !Apellido ||
+      !Correo ||
+      !Clave ||
+      !DescripcionRol ||
+      !DescripcionEstado
     ) {
       alert('Por favor, completa todos los campos del formulario.');
       return; // Detener la ejecución si hay campos vacíos
     }
 
     // Validar el campo de correo electrónico
-    if (!emailRegex.test(correo)) {
+    if (!emailRegex.test(Correo)) {
       alert('Correo electrónico no válido');
       return; // Detener la ejecución si la validación del correo electrónico falla
     }
 
     const formData = {
-      nombreUsuario,
-      apellido,
-      correo,
-      clave,
-      rolIdRol,
-      estadoIdEstado,
+      NombreUsuario,
+      Apellido,
+      Correo,
+      Clave,
+      DescripcionRol,
+      DescripcionEstado,
     };
 
-    onSubmit(formData);
+    await onSubmit(formData);
+
+    if (onUpdate) {
+      onUpdate();
+    }
+
+    setNombreUsuario('');
+    setApellido('');
   };
 
   return (
@@ -58,21 +65,21 @@ const FormularioUsuario = ({ onSubmit }) => {
       <Text style={styles.label}>Nombre de Usuario:</Text>
       <TextInput
         style={styles.input}
-        value={nombreUsuario}
+        value={NombreUsuario}
         onChangeText={setNombreUsuario}
       />
 
       <Text style={styles.label}>Apellido:</Text>
       <TextInput
         style={styles.input}
-        value={apellido}
+        value={Apellido}
         onChangeText={setApellido}
       />
 
       <Text style={styles.label}>Correo:</Text>
       <TextInput
         style={styles.input}
-        value={correo}
+        value={Correo}
         onChangeText={setCorreo}
         keyboardType="email-address"
       />
@@ -80,7 +87,7 @@ const FormularioUsuario = ({ onSubmit }) => {
       <Text style={styles.label}>Clave:</Text>
       <TextInput
         style={styles.input}
-        value={clave}
+        value={Clave}
         onChangeText={setClave}
         secureTextEntry
       />
@@ -88,17 +95,17 @@ const FormularioUsuario = ({ onSubmit }) => {
       <Text style={styles.label}>Rol:</Text>
       <Picker
         style={styles.input}
-        selectedValue={rolIdRol}
+        selectedValue={DescripcionRol}
         onValueChange={(itemValue) => setRolIdRol(itemValue)}>
-        {roles.map((role) => (
-          <Picker.Item key={role} label={role} value={role} />
+        {roles.map((rol) => (
+          <Picker.Item key={rol} label={rol} value={rol} />
         ))}
       </Picker>
 
       <Text style={styles.label}>Estado:</Text>
       <Picker
         style={styles.input}
-        selectedValue={estadoIdEstado}
+        selectedValue={DescripcionEstado}
         onValueChange={(itemValue) => setEstadoIdEstado(itemValue)}>
         {estados.map((estado) => (
           <Picker.Item key={estado} label={estado} value={estado} />
@@ -124,6 +131,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 16,
     padding: 8,
+    color: 'black',
   },
 });
 

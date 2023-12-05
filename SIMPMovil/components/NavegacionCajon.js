@@ -11,11 +11,11 @@ const Drawer = createDrawerNavigator();
 
 function MyDrawer() {
   return (
-    <Drawer.Navigator useLegacyImplementation>
-      <Drawer.Screen name="Login" component={Login} />
+    <Drawer.Navigator>
+      <Drawer.Screen initialRouteName name="Login" component={Login} />
       <Drawer.Screen name="Usuarios" component={Usuarios} />
-      <Drawer.Screen name="FormularioUsuario" component={FormularioUsuario} />
-      <Drawer.Screen name="FMovimientoForm" component={FMovimientoForm} />
+      {/* <Drawer.Screen name="FormularioUsuario" component={FormularioUsuario} /> */}
+      {/* <Drawer.Screen name="FMovimientoForm" component={FMovimientoForm} /> */}
     </Drawer.Navigator>
   )
 }

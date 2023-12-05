@@ -1,92 +1,47 @@
-import React from 'react';
-import { Button, View, Text, FlatList, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  TextInput,
+  Button,
+  View,
+  Text,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
+import axios from 'axios';
+import FormularioUsuario from './FormularioUsuario';
 
-const dataPrueba = [
-  {
-    IDExistencias: 1,
-    CantidadExistencias: 100,
-    CantidadConsumida: 20,
-    PuntoCompra: 'Algun Punto',
-    PuntoMaximo: 200,
-    FechaUltimaModificacion: '2023-11-22',
-    IDProductoMateriaPrima: 101,
-  },
-  {
-    IDExistencias: 2,
-    CantidadExistencias: 150,
-    CantidadConsumida: 30,
-    PuntoCompra: 'Otro Punto',
-    PuntoMaximo: 250,
-    FechaUltimaModificacion: '2023-11-21',
-    IDProductoMateriaPrima: 102,
-  },
-  {
-    IDExistencias: 2,
-    CantidadExistencias: 150,
-    CantidadConsumida: 30,
-    PuntoCompra: 'Otro Punto',
-    PuntoMaximo: 250,
-    FechaUltimaModificacion: '2023-11-21',
-    IDProductoMateriaPrima: 102,
-  },
-  {
-    IDExistencias: 2,
-    CantidadExistencias: 150,
-    CantidadConsumida: 30,
-    PuntoCompra: 'Otro Punto',
-    PuntoMaximo: 250,
-    FechaUltimaModificacion: '2023-11-21',
-    IDProductoMateriaPrima: 102,
-  },
-  {
-    IDExistencias: 2,
-    CantidadExistencias: 150,
-    CantidadConsumida: 30,
-    PuntoCompra: 'Otro Punto',
-    PuntoMaximo: 250,
-    FechaUltimaModificacion: '2023-11-21',
-    IDProductoMateriaPrima: 102,
-  },
-  {
-    IDExistencias: 2,
-    CantidadExistencias: 150,
-    CantidadConsumida: 30,
-    PuntoCompra: 'Otro Punto',
-    PuntoMaximo: 250,
-    FechaUltimaModificacion: '2023-11-21',
-    IDProductoMateriaPrima: 102,
-  },
-  {
-    IDExistencias: 2,
-    CantidadExistencias: 150,
-    CantidadConsumida: 30,
-    PuntoCompra: 'Otro Punto',
-    PuntoMaximo: 250,
-    FechaUltimaModificacion: '2023-11-21',
-    IDProductoMateriaPrima: 102,
-  },
-  {
-    IDExistencias: 2,
-    CantidadExistencias: 150,
-    CantidadConsumida: 30,
-    PuntoCompra: 'Otro Punto',
-    PuntoMaximo: 250,
-    FechaUltimaModificacion: '2023-11-21',
-    IDProductoMateriaPrima: 102,
-  },
-  // Agrega más datos según tus necesidades
-];
+const apiUrl = 'http://192.168.0.10:3000/usuarios';
 
-const Tabla = ({ data }) => {
+const Tabla = () => {
+  const [data, setData] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(apiUrl);
+      setData(response.data);
+    } catch (error) {
+      console.error('Error al obtener datos de la API:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const renderHeader = () => (
     <View style={styles.header}>
-      <Text style={styles.headerText}> ID </Text>
-      <Text style={styles.headerText}> Cantidad Existencias </Text>
-      <Text style={styles.headerText}> Cantidad Consumida </Text>
-      <Text style={styles.headerText}> Punto de Compra </Text>
-      <Text style={styles.headerText}> Punto Máximo </Text>
-      <Text style={styles.headerText}> Fecha de Modificación </Text>
-      <Text style={styles.headerText}> ID Producto/Materia Prima </Text>
+      <Text style={styles.headerText}> idUsuario </Text>
+      <Text style={styles.headerText}> NombreUsuario </Text>
+      <Text style={styles.headerText}> Apellido </Text>
+      <Text style={styles.headerText}> Correo </Text>
+      <Text style={styles.headerText}> Clave </Text>
+      <Text style={styles.headerText}> Rol_IdRol </Text>
+      <Text style={styles.headerText}> Estado_idEstado </Text>
       <Text style={styles.headerText}> Editar </Text>
       <Text style={styles.headerText}> Borrar </Text>
     </View>
@@ -95,34 +50,99 @@ const Tabla = ({ data }) => {
   const renderItem = ({ item }) => (
     <TouchableOpacity onPress={() => console.log('Elemento presionado')}>
       <View style={styles.row}>
-        <Text style={styles.cell}>{item.IDExistencias}</Text>
-        <Text style={styles.cell}>{item.CantidadExistencias}</Text>
-        <Text style={styles.cell}>{item.CantidadConsumida}</Text>
-        <Text style={styles.cell}>{item.PuntoCompra}</Text>
-        <Text style={styles.cell}>{item.PuntoMaximo}</Text>
-        <Text style={styles.cell}>{item.FechaUltimaModificacion}</Text>
-        <Text style={styles.cell}>{item.IDProductoMateriaPrima}</Text>
-        <Button style={[styles.cell, styles.Editar]} title="Editar" />
-        <Button style={[styles.cell, styles.Borrar]} title="Borrar" />
+        <Text style={styles.cell}>{item.idUsuario}</Text>
+        <Text style={styles.cell}>{item.NombreUsuario}</Text>
+        <Text style={styles.cell}>{item.Apellido}</Text>
+        <Text style={styles.cell}>{item.Correo}</Text>
+        <Text style={styles.cell}>{item.Clave}</Text>
+        <Text style={styles.cell}>{item.DescripcionRol}</Text>
+        <Text style={styles.cell}>{item.DescripcionEstado}</Text>
+        <Button
+          style={[styles.cell, styles.Editar]}
+          onPress={() => editar(item)}
+          title="Editar"
+        />
+        <Button
+          style={[styles.cell, styles.Borrar]}
+          onPress={() => borrar(item.idUsuario)}
+          title="Borrar"
+        />
       </View>
     </TouchableOpacity>
   );
 
+  const agregar = async () => {
+    try {
+      const response = await axios.post(apiUrl, {
+        nombreUsuario: 'NuevoNombreUsuario',
+        apellido: 'NuevoApellido',
+        correo: 'nuevo@example.com',
+        clave: 'NuevaClave',
+        DescripcionRol: 'Admin',
+        DescripcionEstado: 'Activo',
+      });
+
+      setData([...data, response.data]);
+    } catch (error) {
+      console.error('Error al agregar nuevo usuario:', error);
+    }
+  };
+
+  const editar = (item) => {
+    setSelectedItem(item);
+    setModalVisible(true);
+  };
+
+  const actualizar = async (formData) => {
+    try {
+      console.log('Datos a enviar:', formData);
+
+      await axios.put(`${apiUrl}/actualizar/${selectedItem.idUsuario}`, formData);
+    } catch (error) {
+      console.error('Error al actualizar usuario:', error);
+    }
+
+    setModalVisible(false);
+    fetchData();
+  };
+
+  const borrar = async (idUsuario) => {
+    try {
+      await axios.delete(`${apiUrl}/borrar/${idUsuario}`);
+      setData(data.filter((user) => user.idUsuario !== idUsuario));
+    } catch (error) {
+      console.error('Error al borrar usuario:', error);
+    }
+  };
+
   return (
     <View>
       <Text style={styles.title}>Usuarios del sistema</Text>
-      <ScrollView horizontal>
+      <Button style={[styles.cell, styles.Borrar]} onPress={agregar} title="Añadir nuevo" />
+      <TextInput keyboardType="email-address" />
+      <Button style={[styles.cell, styles.Borrar]} onPress={borrar} title="Buscar" />
 
+      <ScrollView horizontal>
         <View style={styles.container}>
           {renderHeader()}
           <FlatList
-            data={dataPrueba}
-            keyExtractor={(item) => item.IDExistencias.toString()}
+            data={data}
+            keyExtractor={(item) => item.idUsuario.toString()}
             renderItem={renderItem}
           />
         </View>
       </ScrollView>
 
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View>
+          <FormularioUsuario data={selectedItem} onSubmit={actualizar} onUpdate={fetchData} />
+        </View>
+      </Modal>
     </View>
   );
 };
