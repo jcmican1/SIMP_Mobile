@@ -1,20 +1,15 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  StyleSheet
-} from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import axios from 'axios';
 
-const FormularioUsuario = ({ onSubmit, data = {}, onUpdate }) => {
-  const [NombreUsuario, setNombreUsuario] = useState(data.NombreUsuario || '');
-  const [Apellido, setApellido] = useState(data.Apellido || '');
-  const [Correo, setCorreo] = useState(data.Correo || '');
-  const [Clave, setClave] = useState(data.Clave || '');
-  const [DescripcionRol, setRolIdRol] = useState(data.DescripcionRol || '');
-  const [DescripcionEstado, setEstadoIdEstado] = useState(data.DescripcionEstado || '');
+const FormularioUsuariosCrear = ({ onSubmit, onUpdate }) => {
+  const [NombreUsuario, setNombreUsuario] = useState('');
+  const [Apellido, setApellido] = useState('');
+  const [Correo, setCorreo] = useState('');
+  const [Clave, setClave] = useState('');
+  const [DescripcionRol, setRolIdRol] = useState('');
+  const [DescripcionEstado, setEstadoIdEstado] = useState('');
 
   const roles = ['1', '2', '3'];
   const estados = ['1', '2', '3'];
@@ -50,14 +45,24 @@ const FormularioUsuario = ({ onSubmit, data = {}, onUpdate }) => {
       DescripcionEstado,
     };
 
-    await onSubmit(formData);
-
-    if (onUpdate) {
-      onUpdate();
+    try {
+      // Utiliza la función onSubmit para enviar los datos
+      await onSubmit(formData);
+      if (onUpdate) {
+        onUpdate();
+      }
+    } catch (error) {
+      console.error('Error al enviar datos:', error);
+      // Puedes manejar el error según tus necesidades
     }
 
+    // Limpiar los campos después de enviar los datos
     setNombreUsuario('');
     setApellido('');
+    setCorreo('');
+    setClave('');
+    setRolIdRol('');
+    setEstadoIdEstado('');
   };
 
   return (
@@ -135,4 +140,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FormularioUsuario;
+export default FormularioUsuariosCrear;

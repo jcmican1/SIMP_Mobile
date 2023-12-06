@@ -1,30 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect  } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import axios from 'axios';  // Importa la biblioteca Axios
+import { useNavigation } from '@react-navigation/native';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [Correo, setCorreo] = useState('');
+  const [Clave, setClave] = useState('');
+  const navigation = useNavigation(); // Obtén la función de navegación
 
-  const handleLogin = () => {
-    if (!email || !password) {
+  const handleLogin = async () => {
+    if (!Correo || !Clave) {
       Alert.alert('Error', 'Por favor, completa todos los campos.');
       return;
     }
 
-    if (!isValidEmail(email)) {
+    if (!isValidCorreo(Correo)) {
       Alert.alert('Error', 'Por favor, ingresa un correo electrónico válido.');
       return;
     }
 
-    // Agrega lógica para validar la contraseña o realizar la autenticación aquí
+    try {
+      const response = await axios.post('http://192.168.0.10:3000/login', {
+        Correo,
+        Clave,
+      });
 
-    alert('Pronto un logeo, Bye');
+      if (response.status === 200) {
+        console.log('¡Inicio de sesión exitoso!');
+        navigation.navigate('Usuarios');
+      } else {
+        // Autenticación fallida, muestra un mensaje de error
+        Alert.alert('Error', 'Inicio de sesión fallido. Verifica tus credenciales.');
+      }
+
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      Alert.alert('Error', 'Hubo un problema al intentar iniciar sesión.');
+    }
   };
 
-  const isValidEmail = (email) => {
-    // Validación básica de correo electrónico
+  const isValidCorreo = (Correo) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return emailRegex.test(Correo);
   };
 
   return (
@@ -34,16 +51,16 @@ const Login = () => {
       <Text style={styles.label}>Correo:</Text>
       <TextInput
         style={styles.input}
-        value={email}
-        onChangeText={(text) => setEmail(text)}
-        placeholder="Ingresa tu email"
+        value={Correo}
+        onChangeText={(text) => setCorreo(text)}
+        placeholder="Ingresa tu Correo"
       />
 
       <Text style={styles.label}>Contraseña:</Text>
       <TextInput
         style={styles.input}
-        value={password}
-        onChangeText={(text) => setPassword(text)}
+        value={Clave}
+        onChangeText={(text) => setClave(text)}
         placeholder="Ingresa tu contraseña"
         secureTextEntry
       />
