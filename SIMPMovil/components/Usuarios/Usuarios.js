@@ -14,6 +14,7 @@ import axios from 'axios';
 import FormularioUsuario from './FormularioUsuario';
 import FormularioUsuariosCrear from './FormularioUsuariosCrear';
 
+
 const apiUrl = 'http://192.168.0.10:3000/usuarios';
 
 const Tabla = () => {
@@ -174,20 +175,24 @@ const styles = StyleSheet.create({
     margin: 16,
     borderRadius: 8,
     overflow: 'hidden',
+    color: 'black',
   },
   header: {
     flexDirection: 'row',
     backgroundColor: '#f0f0f0',
     padding: 10,
+    color: 'black',
   },
   headerText: {
     fontWeight: 'bold',
     flex: 1,
+    color: 'black',
   },
   row: {
     flexDirection: 'row',
     paddingVertical: 8,
     backgroundColor: '#fff',
+    color: 'black',
   },
   cell: {
     flex: 1,
@@ -195,6 +200,7 @@ const styles = StyleSheet.create({
     padding: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#c0c0c0',
+    color: 'black',
   },
   Editar: {
     color: '#00FF23',
@@ -207,6 +213,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
+    color: 'black',
   },
 });
 

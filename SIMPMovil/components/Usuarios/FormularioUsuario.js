@@ -16,8 +16,15 @@ const FormularioUsuario = ({ onSubmit, data = {}, onUpdate }) => {
   const [DescripcionRol, setRolIdRol] = useState(data.DescripcionRol || '');
   const [DescripcionEstado, setEstadoIdEstado] = useState(data.DescripcionEstado || '');
 
-  const roles = ['1', '2', '3'];
-  const estados = ['1', '2', '3'];
+  const roles = [
+    { label: 'Admin', value: '1' },
+    { label: 'Empleado', value: '2' }
+  ];
+
+  const estados = [
+    { label: 'Activo', value: '1' },
+    { label: 'Inactivo', value: '2' }
+  ];
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -98,7 +105,7 @@ const FormularioUsuario = ({ onSubmit, data = {}, onUpdate }) => {
         selectedValue={DescripcionRol}
         onValueChange={(itemValue) => setRolIdRol(itemValue)}>
         {roles.map((rol) => (
-          <Picker.Item key={rol} label={rol} value={rol} />
+          <Picker.Item key={rol.value} label={rol.label} value={rol.value} />
         ))}
       </Picker>
 
@@ -108,7 +115,7 @@ const FormularioUsuario = ({ onSubmit, data = {}, onUpdate }) => {
         selectedValue={DescripcionEstado}
         onValueChange={(itemValue) => setEstadoIdEstado(itemValue)}>
         {estados.map((estado) => (
-          <Picker.Item key={estado} label={estado} value={estado} />
+          <Picker.Item key={estado.value} label={estado.label} value={estado.value} />
         ))}
       </Picker>
 
