@@ -12,12 +12,14 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import FormularioUsuario from './FormularioUsuario';
+import FormularioUsuariosCrear from './FormularioUsuariosCrear';
 
 const apiUrl = 'http://192.168.0.10:3000/usuarios';
 
 const Tabla = () => {
   const [data, setData] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisibleCreacion, setModalVisibleCreacion] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
   const fetchData = async () => {
@@ -71,21 +73,9 @@ const Tabla = () => {
     </TouchableOpacity>
   );
 
-  const agregar = async () => {
-    try {
-      const response = await axios.post(apiUrl, {
-        nombreUsuario: 'NuevoNombreUsuario',
-        apellido: 'NuevoApellido',
-        correo: 'nuevo@example.com',
-        clave: 'NuevaClave',
-        DescripcionRol: 'Admin',
-        DescripcionEstado: 'Activo',
-      });
-
-      setData([...data, response.data]);
-    } catch (error) {
-      console.error('Error al agregar nuevo usuario:', error);
-    }
+  const agregar = () => {
+    setSelectedItem(null); // Para indicar que no hay ningún elemento seleccionado (nuevo usuario)
+    setModalVisibleCreacion(true);
   };
 
   const editar = (item) => {
@@ -96,13 +86,35 @@ const Tabla = () => {
   const actualizar = async (formData) => {
     try {
       console.log('Datos a enviar:', formData);
-
-      await axios.put(`${apiUrl}/actualizar/${selectedItem.idUsuario}`, formData);
+      if (selectedItem.idUsuario) {
+        await axios.put(`${apiUrl}/actualizar/${selectedItem.idUsuario}`, formData);
+      }
+      else {
+        try {
+          await axios.put(`${apiUrl}/agregar`, formData);
+        } catch (error) {
+          console.error('Error al agregar usuario:', error);
+          throw error; // Puedes manejar el error según tus necesidades
+        }
+      }
     } catch (error) {
-      console.error('Error al actualizar usuario:', error);
+      console.error('Error en actualizar/crear usuario:', error);
     }
 
     setModalVisible(false);
+    fetchData();
+  };
+
+  const crear = async (formData) => {
+    console.log('Datos a enviar:', formData);
+    try {
+      await axios.post(`${apiUrl}/agregar`, formData);
+    } catch (error) {
+      console.error('Error al agregar usuario:', error);
+      throw error;
+    }
+
+    setModalVisibleCreacion(false);
     fetchData();
   };
 
@@ -141,6 +153,16 @@ const Tabla = () => {
       >
         <View>
           <FormularioUsuario data={selectedItem} onSubmit={actualizar} onUpdate={fetchData} />
+        </View>
+      </Modal>
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={modalVisibleCreacion}
+        onRequestClose={() => setModalVisibleCreacion(false)}
+      >
+        <View>
+          <FormularioUsuariosCrear onSubmit={crear} onUpdate={fetchData} />
         </View>
       </Modal>
     </View>
