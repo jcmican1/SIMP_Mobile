@@ -7,8 +7,10 @@ import {
   StyleSheet
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { useAuth } from './AuthContext'; // Asegúrate de importar useAuth
 
 const FormularioUsuario = ({ onSubmit, data = {}, onUpdate }) => {
+  const { token } = useAuth(); // Obtén el token del contexto
   const [NombreUsuario, setNombreUsuario] = useState(data.NombreUsuario || '');
   const [Apellido, setApellido] = useState(data.Apellido || '');
   const [Correo, setCorreo] = useState(data.Correo || '');
