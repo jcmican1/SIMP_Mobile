@@ -13,20 +13,51 @@ import {
 import axios from 'axios';
 import FormularioUsuario from './FormularioUsuario';
 import FormularioUsuariosCrear from './FormularioUsuariosCrear';
-
+import { useAuth } from './AuthContext'; // Asegúrate de importar useAuth
 
 const apiUrl = 'http://192.168.0.10:3000/usuarios';
 
 const Tabla = () => {
+  const [query, setQuery] = useState('');
   const [data, setData] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleCreacion, setModalVisibleCreacion] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const fetchData = async () => {
+  const { token } = useAuth(); // Obtén el token del contexto
+
+  const fetchData = async (Busqueda = null) => {
     try {
-      const response = await axios.get(apiUrl);
-      setData(response.data);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`, // Agrega el token a la cabecera
+        },
+      };
+
+      if (Busqueda !== null) {
+        console.log("dentro de fetch data pero del if primer bloque");
+        const response = await axios.get(`${apiUrl}/${Busqueda}`, config);
+        setData(response.data);
+      } else {
+        const response = await axios.get(apiUrl, config);
+        setData(response.data);
+      }
+    } catch (error) {
+      console.error('Error al obtener datos de la API:', error);
+    }
+  };
+
+  const fetchData2 = async (Busqueda = null) => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`, // Agrega el token a la cabecera
+        },
+      };
+
+        const response = await axios.get(apiUrl, config);
+        setData(response.data);
+      
     } catch (error) {
       console.error('Error al obtener datos de la API:', error);
     }
@@ -74,6 +105,23 @@ const Tabla = () => {
     </TouchableOpacity>
   );
 
+  const buscar = async (query) => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const response = await axios.get(`${apiUrl}/${query}`,{
+        ...config
+      });
+      setData(response.data);
+    } catch (error) {
+      console.error('Error al buscar usuarios:', error);
+    }
+  };
+
   const agregar = () => {
     setSelectedItem(null); // Para indicar que no hay ningún elemento seleccionado (nuevo usuario)
     setModalVisibleCreacion(true);
@@ -87,12 +135,18 @@ const Tabla = () => {
   const actualizar = async (formData) => {
     try {
       console.log('Datos a enviar:', formData);
+  
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`, // Agrega el token a la cabecera
+        },
+      };
+  
       if (selectedItem.idUsuario) {
-        await axios.put(`${apiUrl}/actualizar/${selectedItem.idUsuario}`, formData);
-      }
-      else {
+        await axios.put(`${apiUrl}/actualizar/${selectedItem.idUsuario}`, formData, config);
+      } else {
         try {
-          await axios.put(`${apiUrl}/agregar`, formData);
+          await axios.put(`${apiUrl}/agregar`, formData, config);
         } catch (error) {
           console.error('Error al agregar usuario:', error);
           throw error; // Puedes manejar el error según tus necesidades
@@ -101,15 +155,21 @@ const Tabla = () => {
     } catch (error) {
       console.error('Error en actualizar/crear usuario:', error);
     }
-
+  
     setModalVisible(false);
-    fetchData();
+    fetchData2();
   };
+  
 
   const crear = async (formData) => {
     console.log('Datos a enviar:', formData);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`, // Agrega el token a la cabecera
+      },
+    };
     try {
-      await axios.post(`${apiUrl}/agregar`, formData);
+      await axios.post(`${apiUrl}/agregar`, formData,config);
     } catch (error) {
       console.error('Error al agregar usuario:', error);
       throw error;
@@ -121,7 +181,12 @@ const Tabla = () => {
 
   const borrar = async (idUsuario) => {
     try {
-      await axios.delete(`${apiUrl}/borrar/${idUsuario}`);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`, // Agrega el token a la cabecera
+        },
+      };
+      await axios.delete(`${apiUrl}/borrar/${idUsuario}`,config);
       setData(data.filter((user) => user.idUsuario !== idUsuario));
     } catch (error) {
       console.error('Error al borrar usuario:', error);
@@ -131,9 +196,23 @@ const Tabla = () => {
   return (
     <View>
       <Text style={styles.title}>Usuarios del sistema</Text>
-      <Button style={[styles.cell, styles.Borrar]} onPress={agregar} title="Añadir nuevo" />
-      <TextInput keyboardType="email-address" />
-      <Button style={[styles.cell, styles.Borrar]} onPress={borrar} title="Buscar" />
+      <Button style={[styles.cell, styles.Borrar]} onPress={agregar}
+        title="Añadir nuevo" />
+      <Button style={[styles.cell, styles.Borrar]} onPress={fetchData2} title="Refrescar" />
+      <View>
+        <TextInput
+          keyboardType="default"
+          placeholder="Ingresa consulta SQL de búsqueda"
+          onChangeText={(text) => setQuery(text)}
+          value={query}
+          style={styles.input}
+        />
+        <Button
+          style={[styles.cell, styles.Borrar]}
+          onPress={() => buscar(query)}
+          title="Buscar"
+        />
+      </View>
 
       <ScrollView horizontal>
         <View style={styles.container}>

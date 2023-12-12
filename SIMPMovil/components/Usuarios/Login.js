@@ -1,12 +1,14 @@
-import React, { useState,useEffect  } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import axios from 'axios';  // Importa la biblioteca Axios
+import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from './AuthContext'; // Importa el contexto
 
 const Login = () => {
   const [Correo, setCorreo] = useState('');
   const [Clave, setClave] = useState('');
-  const navigation = useNavigation(); // Obtén la función de navegación
+  const navigation = useNavigation();
+  const { signIn } = useContext(AuthContext);
 
   const handleLogin = async () => {
     if (!Correo || !Clave) {
@@ -25,14 +27,16 @@ const Login = () => {
         Clave,
       });
 
-      if (response.status === 200) {
+      console.log("TOKEN",response.data,"TOKEN");
+
+      if (response.status === 200 && response.data) {
+        // Llama a la función signIn del contexto para almacenar el token
+        signIn(response.data);
         console.log('¡Inicio de sesión exitoso!');
         navigation.navigate('Usuarios');
       } else {
-        // Autenticación fallida, muestra un mensaje de error
         Alert.alert('Error', 'Inicio de sesión fallido. Verifica tus credenciales.');
       }
-
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       Alert.alert('Error', 'Hubo un problema al intentar iniciar sesión.');

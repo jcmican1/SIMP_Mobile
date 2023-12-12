@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
+import { useAuth } from './AuthContext'; // Asegúrate de importar useAuth
 
 const FormularioUsuariosCrear = ({ onSubmit, onUpdate }) => {
+  const { token } = useAuth(); // Obtén el token del contexto
   const [NombreUsuario, setNombreUsuario] = useState('');
   const [Apellido, setApellido] = useState('');
   const [Correo, setCorreo] = useState('');
